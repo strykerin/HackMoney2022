@@ -29,7 +29,7 @@ import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
-import { Home, ExampleUI, Hints, Subgraph } from "./views";
+import { Home, ExampleUI, Hints, Subgraph, Demo } from "./views";
 import { useStaticJsonRPC } from "./hooks";
 
 const { ethers } = require("ethers");
@@ -53,7 +53,7 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const initialNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const initialNetwork = NETWORKS.rinkeby; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -167,7 +167,12 @@ function App(props) {
   ]);
 
   // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "YourContract", "purpose");
+  // const purpose = useContractReader(readContracts, "YourContract", "purpose");
+  const purpose = 'This is not hooked up';
+  const userPubKey = useContractReader(readContracts, "IdenConnect", "userPubKeyMap", [address]);
+  const autoPubKey = useContractReader(readContracts, "IdenConnect", "autoPubKeyMap", [address]);
+
+  console.log('sns', userPubKey, autoPubKey);
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -299,12 +304,15 @@ function App(props) {
         <Menu.Item key="/exampleui">
           <Link to="/exampleui">ExampleUI</Link>
         </Menu.Item>
-        <Menu.Item key="/mainnetdai">
+        <Menu.Item key="/demo">
+          <Link to="/demo">Demo</Link>
+        </Menu.Item>
+        {/* <Menu.Item key="/mainnetdai">
           <Link to="/mainnetdai">Mainnet DAI</Link>
         </Menu.Item>
         <Menu.Item key="/subgraph">
           <Link to="/subgraph">Subgraph</Link>
-        </Menu.Item>
+        </Menu.Item> */}
       </Menu>
 
       <Switch>
@@ -320,7 +328,7 @@ function App(props) {
             */}
 
           <Contract
-            name="YourContract"
+            name="IdenConnect"
             price={price}
             signer={userSigner}
             provider={localProvider}
@@ -351,8 +359,24 @@ function App(props) {
             purpose={purpose}
           />
         </Route>
+        <Route path="/demo">
+          <Demo
+            address={address}
+            userSigner={userSigner}
+            mainnetProvider={mainnetProvider}
+            localProvider={localProvider}
+            yourLocalBalance={yourLocalBalance}
+            price={price}
+            tx={tx}
+            writeContracts={writeContracts}
+            readContracts={readContracts}
+            purpose={purpose}
+            userPubKey = {userPubKey}
+            autoPubKey = {autoPubKey}
+          />
+        </Route>
         <Route path="/mainnetdai">
-          <Contract
+          {/* <Contract
             name="DAI"
             customContract={mainnetContracts && mainnetContracts.contracts && mainnetContracts.contracts.DAI}
             signer={userSigner}
@@ -361,7 +385,7 @@ function App(props) {
             blockExplorer="https://etherscan.io/"
             contractConfig={contractConfig}
             chainId={1}
-          />
+          /> */}
           {/*
             <Contract
               name="UNI"
@@ -374,12 +398,12 @@ function App(props) {
             */}
         </Route>
         <Route path="/subgraph">
-          <Subgraph
+          {/* <Subgraph
             subgraphUri={props.subgraphUri}
             tx={tx}
             writeContracts={writeContracts}
             mainnetProvider={mainnetProvider}
-          />
+          /> */}
         </Route>
       </Switch>
 
